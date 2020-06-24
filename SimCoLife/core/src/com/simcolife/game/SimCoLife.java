@@ -32,6 +32,7 @@ import com.simcolife.game.littlegame.FinalExamScreen;
 import com.simcolife.game.littlegame.MidtermExamScreen;
 import com.simcolife.game.littlegame.PetGameScreen;
 import com.simcolife.tools.Calender;
+import com.simcolife.tools.Calender.ImportantEvent;
 import com.simcolife.tools.Dice;
 import com.simcolife.tools.Menu;
 import com.simcolife.tools.Tutorial;
@@ -126,16 +127,18 @@ public class SimCoLife extends ScreenAdapter {
 			petGameButton.setChecked(true);
 		}
 		
-		if(currPlayer.getHealth() > 90) {
-			this.nextBlock = 20;
-			SimCoLife.playerNow = 20;
-			triggerEvent();
-		}
-		
-		if(currPlayer.getKimoji() < 20) {
-			this.nextBlock = 20;
-			SimCoLife.playerNow = 20;
-			triggerEvent();
+		if(currPlayer.getCurrentSeason() != ImportantEvent.MIDTERM || currPlayer.getCurrentSeason() != ImportantEvent.FINAL) {
+			if(currPlayer.getHealth() > 90) {
+				this.nextBlock = 20;
+				SimCoLife.playerNow = 20;
+				triggerEvent();
+			}
+			
+			if(currPlayer.getKimoji() < 20) {
+				this.nextBlock = 20;
+				SimCoLife.playerNow = 20;
+				triggerEvent();
+			}
 		}
 		
 		game.batch.begin();
@@ -426,15 +429,6 @@ public class SimCoLife extends ScreenAdapter {
 			}, 0.5f);
 		}
 	}
-//	public Texture createPixmap() {
-//		Pixmap pixmap = new Pixmap(550, 110, Pixmap.Format.RGBA8888);
-//		pixmap.setColor(Color.BLACK);
-//		pixmap.drawRectangle(0, 0, 550, 110);
-//		Texture t = new Texture(pixmap);
-//		pixmap.dispose();
-//		return t;
-//	}
-
 	
 	//draw calendar information
 	private void drawCalendar() {

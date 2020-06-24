@@ -31,6 +31,7 @@ public class HospitalEvent extends ScreenAdapter {
     private GlyphLayout glyphLayout;
     private Texture pic;
 
+    
 //---------------------------hospital Event----------------------------
     public static final String[] PIC_LIST = {"Phlebotomy", "Candy", "Caretaker"};
     public static final String[] WORD_LIST = {"捐個血，神清氣爽", "你有一顆棒棒肝，醫生給你吃糖糖", "陪陪老人家，十大好青年"};
@@ -110,23 +111,26 @@ public class HospitalEvent extends ScreenAdapter {
 				if(keycode == Keys.SPACE) {
 					Cards.SOUND.play();
 					game.simcolife.getCurrPlayer().setHealth(game.simcolife.getCurrPlayer().getHealth()-40);
-					game.setScreen(game.simcolife);
-					Timer.schedule(new Task() {
-						@Override
-						public void run() {
-							if(game.simcolife.getCurrPlayer().getHealth() > 90) {
-								game.simcolife.getCurrPlayer().setAllStatics(DEAD_LIVER);
-							}
-							else if(game.simcolife.getCurrPlayer().getKimoji() < 20) {
-								game.simcolife.getCurrPlayer().setAllStatics(DEPRESSED);
-							}
-							else {
+					if(game.simcolife.getCurrPlayer().getHealth() > 90) {
+						game.simcolife.getCurrPlayer().setAllStatics(DEAD_LIVER);
+						game.setScreen(game.simcolife);
+					}
+					else if(game.simcolife.getCurrPlayer().getKimoji() < 20) {
+						game.simcolife.getCurrPlayer().setAllStatics(DEPRESSED);
+						game.setScreen(game.simcolife);
+					}
+					else {
+						game.setScreen(game.simcolife);
+						Timer.schedule(new Task() {
+							@Override
+							public void run() {
 								game.simcolife.getCurrPlayer().setAllStatics(EVENT_LIST[ind]);
+								Calender.timeConvert(game.simcolife.getCurrPlayer().getTime());
+								Cards.SOUND.stop();
 							}
-							Calender.timeConvert(game.simcolife.getCurrPlayer().getTime());
-							Cards.SOUND.stop();
-						}
-					}, 0.5f);
+						}, 0.5f);
+					}
+					
 				}
 				return super.keyDown(event, keycode);
 			}
