@@ -54,6 +54,7 @@ public class PetGameScreen extends ScreenAdapter {
 	private ImageButton bathButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(bath)), new TextureRegionDrawable(new TextureRegion(bathPress)), new TextureRegionDrawable(new TextureRegion(bathPress)));
     private int gameScore = 0;
     private GameState currentState = GameState.START_MENU;
+    //private Array<PetCommand> commands; 改成類別共用
     private FreeTypeFontGenerator fontGenerator;
     private FreeTypeFontParameter fontParameter;
     private BitmapFont font;
@@ -80,7 +81,7 @@ public class PetGameScreen extends ScreenAdapter {
 		}
 		PetCommand.setCommandsArray(new Array<PetCommand>());
 		setStage();
-
+		
 		switch (player.getMyPet().getSelected()) {
 		case E_CHICK:
 			petImg = new Texture(Gdx.files.internal("pet/ChoosePet01Img.png"));
@@ -175,8 +176,7 @@ public class PetGameScreen extends ScreenAdapter {
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0, 0, 0.2f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		switch (currentState) {
-		case START_MENU:
+		if(currentState == GameState.START_MENU) {
 			game.batch.begin();
 			game.batch.draw(tutorial,0,0);
 			font.setColor(Color.BLUE);
@@ -188,8 +188,8 @@ public class PetGameScreen extends ScreenAdapter {
 				currentState = GameState.GAME;
 				commandInterval = TimeUtils.nanoTime();
 			}
-			break;
-		case GAME_OVER:
+		}
+		else if(currentState == GameState.GAME_OVER) {
 			game.batch.begin();
 			game.batch.draw(textBackgroundImg,0,0);
 			font.setColor(Color.BLUE);
@@ -208,8 +208,8 @@ public class PetGameScreen extends ScreenAdapter {
 				}, 0.5f);
 			}
 			game.batch.end();
-			break;
-		case GAME:
+		}
+		else {		
 			elapsed = TimeUtils.timeSinceNanos(startTime);
 			game.batch.begin();
 			game.batch.draw(backgroundImg,0,0);
@@ -239,9 +239,6 @@ public class PetGameScreen extends ScreenAdapter {
 			}
 			stage.act(Gdx.graphics.getDeltaTime());
 			stage.draw();
-			break;
-		default:
-			break;
 		}
 	}
 	@Override
