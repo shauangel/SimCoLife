@@ -1,4 +1,28 @@
-SimCoGame game;
+package com.simcolife.game.littlegame;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
+import com.simcolife.game.Player;
+import com.simcolife.game.SimCoGame;
+import com.simcolife.game.event.Event;
+import com.simcolife.game.event.EventType;
+import com.simcolife.tools.Calender;
+
+public class FinalExamScreen extends ScreenAdapter {
+	SimCoGame game;
 	Player player;
 	private int INIT_BULLET_SIZE = 50;
     private int INIT_CHARACTER_SIZE = 120;
@@ -8,7 +32,6 @@ SimCoGame game;
     private FreeTypeFontGenerator fontGenerator;
     private FreeTypeFontParameter fontParameter;
     private BitmapFont font;
-    private String fontCharacters;
 	private GameState currentGameState = GameState.START_MENU;
 	private Texture characterImg;
 	private Texture enemyImg = new Texture(Gdx.files.internal("exam/FinalEnemyImg.png"));
@@ -27,31 +50,24 @@ SimCoGame game;
     private long lastAttackTime;
     private long elapsed;
     
-    private void setFont(int fontSize,String fontCharacters) {
-    	fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("rttf.ttf"));
-		fontParameter = new FreeTypeFontParameter();
-		fontParameter.size = fontSize;
-		fontParameter.characters = FreeTypeFontGenerator.DEFAULT_CHARS + fontCharacters;
-		font = fontGenerator.generateFont(fontParameter);
-    }
 
 	public FinalExamScreen(SimCoGame game,Player player) {
 		this.game = game;
 		SimCoGame.formalMusic.pause();
 		this.player = player;
-		fontCharacters = "按SPACE離開剩餘時間：得期末考試成績獲得學分";
-		setFont(100, fontCharacters);
-		
-		switch (player.getGender()) {
-		case 'M':
+		fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("rttf.ttf"));
+		fontParameter = new FreeTypeFontParameter();
+		fontParameter.size = 100;
+		fontParameter.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "按SPACE離開剩餘時間：得期末考試成績獲得學分";
+		font = fontGenerator.generateFont(fontParameter);
+
+		if(player.getGender() == 'M') {
 			characterImg = new Texture(Gdx.files.internal("exam/CharacterMaleImg.png"));
-			break;
-		case 'F':
-			characterImg = new Texture(Gdx.files.internal("exam/CharacterFemaleImg.png"));
-			break;
-		default:
-			break;
 		}
+		else {
+			characterImg = new Texture(Gdx.files.internal("exam/CharacterFemaleImg.png"));
+		}
+		
 		enemy = new Enemy(325, 780 - INIT_ENEMY_SIZE/2, 100, 600,INIT_ENEMY_SIZE);
 		character = new Character(650,INIT_CHARACTER_SIZE/2, 100, 500,INIT_CHARACTER_SIZE);
 		
@@ -68,17 +84,16 @@ SimCoGame game;
 		game.batch.begin();
 	    Gdx.gl.glClearColor(0, 0, 0.2f, 1);
 	    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);    
-	    switch(currentGameState) {
-	    case START_MENU:
-	    	game.batch.draw(startMenuImg,0,0);
+		if(currentGameState == GameState.START_MENU) {
+			game.batch.draw(startMenuImg,0,0);
 			if(Gdx.input.isKeyJustPressed(Keys.ENTER)) {
 				startTime = TimeUtils.nanoTime();
 				lastAttackTime = TimeUtils.nanoTime();
 				currentGameState = GameState.GAME;
 			}
-	    	break;
-	    case GAME_OVER:
-	    	game.batch.draw(gameResultImg,0,0);
+		}
+		else if(currentGameState == GameState.GAME_OVER){
+			game.batch.draw(gameResultImg,0,0);
 			font.setColor(Color.RED);
 			font.draw(game.batch, "期末考試成績："+ gameScore +"  分\n" 
 					+ "獲得學分：" + Integer.toString(Math.round(gameScore/10)), 300, 490);
@@ -96,9 +111,8 @@ SimCoGame game;
 					}
 				}, 0.5f);
 			}
-			game.batch.end();
-	    	break;
-	    case GAME:
+		}
+		else if(currentGameState == GameState.GAME){
 			font.setColor(Color.BLACK);
 			game.batch.draw(backgroundImg,0,0);
 			game.batch.draw(characterImg,character.getImgX(),character.getImgY());
@@ -109,41 +123,41 @@ SimCoGame game;
 			font.getData().setScale((float) 0.5);
 			font.draw(game.batch, Integer.toString(character.getHp()),character.getImgX(),character.getImgY() + INIT_CHARACTER_SIZE + 25);
 			font.draw(game.batch, Integer.toString(enemy.getHp()),enemy.getImgX(),enemy.getImgY());
+			
 			elapsed = TimeUtils.timeSinceNanos(startTime);
 			
 		    enemy.autoFight(character);
 		    character.bulletsFly(enemy, true);
 		    enemy.bulletsFly(character, false);
-		    drawCharacterBullets();
-		    drawEnemyBullets();
+			for(Bullet bullet: character.bullets)
+				game.batch.draw(playerBulletImg, bullet.getImgX(), bullet.getImgY());
+			for(Bullet bullet: enemy.bullets)
+				game.batch.draw(enemyBulletImg, bullet.getImgX(), bullet.getImgY());
 			lastAttackTime = enemy.autoShoot(lastAttackTime);
 		    controlPlayer();
 		    isOver();   
-	    	break;
-	    default:
-	    	break;
-	    }
-	}
-	
-	@Override
-	public void hide() {
-		Gdx.input.setInputProcessor(null);
-		this.dispose();
+		}
+		game.batch.end();
 	}
 	
 	@Override
 	public void dispose () {
-		music.dispose();
 		characterImg.dispose();
+		shootSound.dispose();
+		music.dispose();
 		enemyImg.dispose();
 		backgroundImg.dispose();
 		playerBulletImg.dispose();
 		enemyBulletImg.dispose();
 		gameResultImg.dispose();
 		startMenuImg.dispose();
-		shootSound.dispose();
 		Gdx.input.setInputProcessor(null);
 		super.dispose();
+	}
+	@Override
+	public void hide() {
+		Gdx.input.setInputProcessor(null);
+		this.dispose();
 	}
     private void isOver() {
     	if (20 - elapsed/1000000000 <= 0 || character.getHp() == 0 ||enemy.getHp() == 0) {
@@ -156,20 +170,12 @@ SimCoGame game;
 			currentGameState = GameState.GAME_OVER;
     	}
     }
-    private void drawCharacterBullets() {
-		for(Bullet bullet: character.bullets)
-			game.batch.draw(playerBulletImg, bullet.getImgX(), bullet.getImgY());
-    }
-    private void drawEnemyBullets() {
-		for(Bullet bullet: enemy.bullets)
-			game.batch.draw(enemyBulletImg, bullet.getImgX(), bullet.getImgY());
-    }
+    
     public Event getGameEvent() {
     	Event finalEvent = new Event("Final", "big", "FinalExam"
     			, 0, 0, 0, Math.round(gameScore/10), 0, 3, EventType.SOSO, 0);
     	return finalEvent;
     }
-    
     private void controlPlayer() {
     	if(Gdx.input.isKeyPressed(Keys.LEFT) && character.getX() > 0 + character.getSize()) {
 			character.setX(character.getX() - character.getSpeed()* Gdx.graphics.getDeltaTime());
