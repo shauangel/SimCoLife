@@ -172,6 +172,7 @@ public class SimCoLife extends ScreenAdapter {
 		for(Block i : route) {
 			game.batch.draw(i.getTexture(), i.getX(), i.getY());
 		}
+		
 //--------------------------------player moving------------------------------------
 		game.batch.draw(currPlayer.getChoosed(), route.get(playerNow).getX(), route.get(playerNow).getY());
 		
@@ -206,6 +207,11 @@ public class SimCoLife extends ScreenAdapter {
 		
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
+		
+		game.batch.begin();
+		game.batch.draw(Dice.DICE_NUM, WINDOW_WIDTH-DICE_WIDTH, 0);
+		game.batch.end();
+		
 	}
 	
 	public void setStage() {
@@ -216,12 +222,20 @@ public class SimCoLife extends ScreenAdapter {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				if(SimCoLife.playerNow == SimCoLife.this.nextBlock) {
+					final int number = Dice.rollDice();
 					dice.play();
+					Dice.setDiceNumber(number);
 					Timer.schedule(new Task() {
 						@Override
 						public void run() {
-							setNextBlock(Dice.rollDice());
 							dice.stop();
+							Timer.schedule(new Task() {
+								@Override
+								public void run() {
+									setNextBlock(number);
+									Dice.setDiceNumber(0);
+								}
+							}, 0.4f);
 						}
 					}, 0.2f);
 				}
