@@ -14,14 +14,14 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 public class Ending extends ScreenAdapter {
 	SimCoGame game;
 	private enum Page{
-		DIPLOMA,ENDING
+		DIPLOMA,ENDING,COMPLETION
 	}
 	private Page currentPage;
 	private Player currPlayer;
 	private Texture diplomaBg = new Texture(Gdx.files.internal("ending/EndingImg1.png"));
 	private Texture avatar;
 	private Texture endingBg = new Texture(Gdx.files.internal("ending/EndingDescriptionImg.png"));
-	
+	private Texture completionBg = new Texture(Gdx.files.internal("ending/EndingCompletionImg.png"));
 	private FreeTypeFontGenerator fontGenerator;
     private FreeTypeFontParameter fontParameter;
     private BitmapFont font;
@@ -46,13 +46,12 @@ public class Ending extends ScreenAdapter {
 			avatar = new Texture(Gdx.files.internal("ending/EndingFemaleImg.png"));
 			break;
 		}
-    	//String name, String category, String describe, int health, int relationship, int money, int score, int kimoji, int time, EventType t, int talent
-    	currPlayer.setHealth(50);
-    	currPlayer.setKimoji(50);
-    	currPlayer.setRelationship(100);
-    	currPlayer.setMoney(10000);
-    	currPlayer.setTalent(100);
-    	currentPage = Page.DIPLOMA;
+    	if(currPlayer.getScore()>=128) {
+        	currentPage = Page.DIPLOMA;
+    	}
+    	else {
+        	currentPage = Page.COMPLETION;
+    	}
     	setFont();
     	endingMusic.play();
 		endingMusic.setLooping(true); 
@@ -62,7 +61,7 @@ public class Ending extends ScreenAdapter {
 		fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("rttf.ttf"));
 		fontParameter = new FreeTypeFontParameter();
         fontParameter.size = 52;
-        fontParameter.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "　肝指數夯奇摩子才藝學分零用錢按下SPAVE繼續"
+        fontParameter.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "　肝指數夯奇摩子才藝學分零用錢按下繼續回到開始畫面"
         		+ "孤獨a郎同學們合夥創業，唯獨自己孤身踏入職場" + "一帆風順畢業完直接被推薦進入大公司"
         		+ "流落街頭敗光零用錢，回家啃老" + "好野人畢業後，研究投資理財，成為大富豪" + "健康新人順利得到工作，為公司獻上新鮮的肝"
         		+ "一路好走頒發畢業證書時在頒獎台上倒下您擁有一個豐富美好的大學生活，R.I.P." +"常將自身的歡樂帶給別人，\n走到哪都是人氣王"
@@ -98,6 +97,24 @@ public class Ending extends ScreenAdapter {
 				getEnding();
 				font.draw(game.batch,endingDescription,300,450);
 				font.draw(game.batch, "按下SPACE繼續",920,80);
+				if(Gdx.input.isKeyJustPressed(Keys.SPACE)) {
+					game.setScreen(new Start(game));
+					game.simcolife.dispose();
+					game.simcolife = new SimCoLife(game);
+					this.dispose();
+				}
+				break;
+			case COMPLETION:
+				game.batch.draw(completionBg, 0, 0);
+				game.batch.draw(avatar,400,260);
+				font.setColor(Color.BLACK);
+				font.draw(game.batch, "肝指數：" + "    " + String.format("%-,7d", currPlayer.getHealth()), 650, 480);
+				font.draw(game.batch, "夯指數：" + "    " + String.format("%-,7d", currPlayer.getRelationship()), 650, 430);
+				font.draw(game.batch, "奇摩子：" + "    " + String.format("%-,7d", currPlayer.getKimoji()), 650, 380);
+				font.draw(game.batch, "才　藝：" + "    " + String.format("%-,7d", currPlayer.getTalent()), 650, 330);
+				font.draw(game.batch, "學　分：" + "    " + String.format("%-,7d", currPlayer.getScore()), 650, 280);
+				font.draw(game.batch, "零用錢：" + "    " + String.format("%-,7d", currPlayer.getMoney()), 650, 230);
+				font.draw(game.batch, "按下SPACE回首頁",920,80);
 				if(Gdx.input.isKeyJustPressed(Keys.SPACE)) {
 					game.setScreen(new Start(game));
 					game.simcolife.dispose();
