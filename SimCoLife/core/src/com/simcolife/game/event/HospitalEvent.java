@@ -39,8 +39,8 @@ public class HospitalEvent extends ScreenAdapter {
     		new Event("", "", "", -10, 0, 0, 0, 5, 1, EventType.HOSPITAL, 0), 
     		new Event("", "", "", 0, 15, 0, 0, 5, 1, EventType.HOSPITAL, 0), 
     		new Event("", "", "", 0, 0, 0, 0, 5, 1, EventType.HOSPITAL, 15)}; 
-    public static final Event DEAD_LIVER = new Event("", "", "", 0, 0, 0, 0, -10, 3, EventType.HOSPITAL, -20);
-    public static final Event DEPRESSED = new Event("", "", "", 20, 0, -2000, 0, 100, 3, EventType.HOSPITAL, 0);
+    public Event DEAD_LIVER = new Event("", "", "", 0, 0, 0, 0, -10, 3, EventType.HOSPITAL, -20);
+    public Event DEPRESSED = new Event("", "", "", 20, 0, -2000, 0, -game.simcolife.getCurrPlayer().getKimoji()+50, 3, EventType.HOSPITAL, 0);
     private String currentEvent;
     private int ind = 0;
     
