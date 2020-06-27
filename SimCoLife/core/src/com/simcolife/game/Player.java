@@ -227,7 +227,7 @@ public class Player {
 			examTime = false;
 			vacationTime = false;
 		}
-//		System.out.println(getCurrentSeason() + " " + isExamTime() + " " + isVacationTime());
+		System.out.println(getCurrentSeason() + " " + isExamTime() + " " + isVacationTime());
 	}
 	
 	public ImportantEvent getCurrentSeason() {

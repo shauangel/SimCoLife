@@ -108,6 +108,7 @@ public class MidtermExamScreen extends ScreenAdapter {
 			font.draw(game.batch, "按SPACE離開", 300, 300);
 			if(Gdx.input.isKeyJustPressed(Keys.SPACE)) {
 				dispose();
+				music.stop();
 				Timer.schedule(new Task() {
 					@Override
 					public void run() {
@@ -139,13 +140,11 @@ public class MidtermExamScreen extends ScreenAdapter {
 	}
 	@Override
 	public void dispose () {
-		music.dispose();
 	    characterImg.dispose();
 	    backgroundImg.dispose();
 	    gameResultImg.dispose();
 	    bulletImg.dispose();
 	    tutorial.dispose();
-		Gdx.input.setInputProcessor(null);
 		super.dispose();
 	}
 	private void drawEnemyBullets() {

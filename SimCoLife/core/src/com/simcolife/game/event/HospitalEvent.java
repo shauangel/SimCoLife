@@ -39,8 +39,7 @@ public class HospitalEvent extends ScreenAdapter {
     		new Event("", "", "", -10, 0, 0, 0, 5, 1, EventType.HOSPITAL, 0), 
     		new Event("", "", "", 0, 15, 0, 0, 5, 1, EventType.HOSPITAL, 0), 
     		new Event("", "", "", 0, 0, 0, 0, 5, 1, EventType.HOSPITAL, 15)}; 
-    public Event DEAD_LIVER = new Event("", "", "", 0, 0, 0, 0, -10, 3, EventType.HOSPITAL, -20);
-    public Event DEPRESSED = new Event("", "", "", 20, 0, -2000, 0, -game.simcolife.getCurrPlayer().getKimoji()+50, 3, EventType.HOSPITAL, 0);
+//    public Event DEAD_LIVER = new Event("", "", "", 0, 0, 0, 0, -10, 3, EventType.HOSPITAL, -20);
     private String currentEvent;
     private int ind = 0;
     
@@ -110,13 +109,12 @@ public class HospitalEvent extends ScreenAdapter {
 			public boolean keyDown(InputEvent event, int keycode) {
 				if(keycode == Keys.SPACE) {
 					Cards.SOUND.play();
-					game.simcolife.getCurrPlayer().setHealth(game.simcolife.getCurrPlayer().getHealth()-40);
 					if(game.simcolife.getCurrPlayer().getHealth() > 90) {
-						game.simcolife.getCurrPlayer().setAllStatics(DEAD_LIVER);
+						game.simcolife.getCurrPlayer().setAllStatics(new Event("", "", "", (70-HospitalEvent.this.game.simcolife.getCurrPlayer().getHealth()), 0, 0, 0, -10, 3, EventType.HOSPITAL, -20));
 						game.setScreen(game.simcolife);
 					}
 					else if(game.simcolife.getCurrPlayer().getKimoji() < 20) {
-						game.simcolife.getCurrPlayer().setAllStatics(DEPRESSED);
+						game.simcolife.getCurrPlayer().setAllStatics(new Event("", "", "", 20, 0, -2000, 0, (50-HospitalEvent.this.game.simcolife.getCurrPlayer().getKimoji()), 3, EventType.HOSPITAL, 0));
 						game.setScreen(game.simcolife);
 					}
 					else {

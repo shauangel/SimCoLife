@@ -127,7 +127,7 @@ public class SimCoLife extends ScreenAdapter {
 			petGameButton.setChecked(true);
 		}
 		
-		if(currPlayer.getCurrentSeason() != ImportantEvent.MIDTERM || currPlayer.getCurrentSeason() != ImportantEvent.FINAL) {
+		if(currPlayer.getCurrentSeason() != ImportantEvent.MIDTERM && currPlayer.getCurrentSeason() != ImportantEvent.FINAL) {
 			if(currPlayer.getHealth() > 90) {
 				this.nextBlock = 20;
 				SimCoLife.playerNow = 20;

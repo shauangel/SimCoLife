@@ -110,6 +110,7 @@ public class FinalExamScreen extends ScreenAdapter {
 				font.setColor(Color.BLACK);
 				font.draw(game.batch, "按SPACE離開", 300, 300);
 				if(Gdx.input.isKeyJustPressed(Keys.SPACE)) {
+					music.stop();
 					this.dispose();
 					game.setScreen(game.simcolife);
 					Timer.schedule(new Task() {
@@ -153,8 +154,6 @@ public class FinalExamScreen extends ScreenAdapter {
 	@Override
 	public void dispose () {
 		characterImg.dispose();
-		shootSound.dispose();
-		music.dispose();
 		enemyImg.dispose();
 		backgroundImg.dispose();
 		playerBulletImg.dispose();
